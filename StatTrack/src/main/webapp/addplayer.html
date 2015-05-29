@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Add Player</title>
+
+<script type="text/javascript">
+	/*
+	 * Validation of input
+	 */
+	function formValidation() {
+		// form field is empty
+		var inputTags = document.getElementsByTagName("input");
+		for (var i = 0; i < inputTags.length; ++i) {
+			if (inputTags[i].type.toLowerCase() == "text"
+					&& inputTags[i].value.length == 0) {
+				alert("Fields must not be empty");
+				inputTags[i].focus();
+				return false;
+			}
+		}
+		// form field is null
+		var inputTags = document.getElementsByTagName("input");
+		for (var i = 0; i < inputTags.length; ++i) {
+			if (inputTags[i].type.toLowerCase() == "text"
+					&& inputTags[i].value == "null") {
+				alert("Fields must not be null");
+				inputTags[i].focus();
+				return false;
+			}
+		}
+
+		return (true);
+	}
+</script>
+</head>
+<body>
+
+</body>
+</html>

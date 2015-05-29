@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Add to Database</title>
+
+<script type="text/javascript">
+	/*
+	 * Validation of input
+	 */
+	function formValidation() {
+		// form field is empty
+		var inputTags = document.getElementsByTagName("input");
+		for (var i = 0; i < inputTags.length; ++i) {
+			if (inputTags[i].type.toLowerCase() == "text"
+					&& inputTags[i].value.length == 0) {
+				alert("Fields must not be empty");
+				inputTags[i].focus();
+				return false;
+			}
+		}
+		// form field is null
+		var inputTags = document.getElementsByTagName("input");
+		for (var i = 0; i < inputTags.length; ++i) {
+			if (inputTags[i].type.toLowerCase() == "text"
+					&& inputTags[i].value == "null") {
+				alert("Fields must not be null");
+				inputTags[i].focus();
+				return false;
+			}
+		}
+
+		return (true);
+	}
+</script>
+
+</head>
+<body>
+
+	<!-- WHEN WE POST DATA -->
+	<div class="formHolder">
+		<form class="empForm" accept-charset="UTF-8">
+			<table class="formTable">
+				<tbody class="formTableBody">
+					<tr class="formHeaderRow">
+						<th>Name</th>
+						<th>Area</th>
+						<th>Population</th>
+					</tr>
+					<tr class="formInputRow">
+						<td><input type="text" class="nameInput"></td>
+						<td><input type="text" class="areaInput"></td>
+						<td><input type="text" class="populationInput"></td>
+					</tr>
+					<tr>
+						<td><input type="submit" class="formSubmit" value="Submit"></td>
+						<td><input type="reset" class="formClearStorage"
+							value="Clear"></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<h1 class='completeResponse'>Waiting for input...</h1>
+		<h1 class='errorResponse'></h1>
+		<input type="button" class="getData" value="GET_All_Data_HTTP_Request">
+	</div>
+
+	<!-- WHEN WE GET DATA BACK -->
+	<div class="empHolder">
+		<table class="empTable">
+			<tbody class="empTableBody">
+				<tr class="empHeaderRow">
+					<th>Name</th>
+					<th>Area</th>
+					<th>Population</th>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="js/jquery-1.11.3.min.js"></script>
+
+	<script type="text/javascript">
+		/*
+		AJAX POST (to database)
+		 */
+		var url = "/PlayerTracker/rest/continent/addcontinent";
+		var contentType = "application/json; charset=utf-8";
+		var dataType = "json";
+		var type = 'POST';
+		//
+		$('.empForm').on('submit', function(event) {
+			// form may be submitting at the same time the ajax code is running
+			// prevent the submit button from redirecting form
+			// let success() and/or failure() handle the redirect/submission
+			event.preventDefault();
+			var formData = JSON.stringify({
+				"name" : $('.nameInput').val(),
+				"area" : $('.areaInput').val(),
+				"population" : $('.populationInput').val()
+			});
+			if (formValidation() != false) {
+				$.ajax({
+					url : url,
+					contentType : contentType,
+					dataType : dataType,
+					type : type,
+					data : formData,
+					// successful transfer of data to server
+					success : function(data, textStatus, jqXHR) {
+						if (data != null) {
+							alert(textStatus + ": Track Added");
+						} else {
+							alert("No Data Returned");
+						}
+					},
+					// server returns with an error
+					error : function(jqXHR, textStatus, errorThrown) {
+						alert(errorThrown);
+					}
+				});
+			}
+		});
+	</script>
+
+	<script type="text/javascript">
+		/*
+		AJAX GET call to server
+		 */
+		var url2 = "/PlayerTracker/rest/continent/getallcontinents";
+		var contentType2 = "application/json; charset=utf-8";
+		var dataType2 = "json";
+		var type2 = 'GET';
+		//
+		$('input.getData')
+				.on(
+						'click',
+						function() {
+							$
+									.ajax({
+										contentType : contentType2,
+										dataType : dataType2,
+										url : url2,
+										// deal with 'not-well formed error'
+										beforeSend : function(xhr) {
+											if (xhr.overrideMimeType) {
+												xhr
+														.overrideMimeType("application/json");
+											}
+										},
+										type : type2,
+										// (jqXHR jqXHR, String textStatus)
+										complete : function(jqXHR, textStatus) {
+											$('h1.completeResponse').text(
+													'REQUEST COMPLETE! \nServer response: '
+															+ textStatus);
+										},
+										success : function(data, textStatus,
+												jqXHR) {
+											var dataSize = data.length;
+											$
+													.each(
+															data,
+															function(key, val) {
+																$(
+																		'.empTableBody')
+																		.append(
+																				$('<tr id='+key+' class=dataRow contenteditable=true>'
+																						+ '<td>'
+																						+ val.name
+																						+ '</td>'
+																						+ '<td>'
+																						+ val.area
+																						+ '</td>'
+																						+ '<td>'
+																						+ val.population
+																						+ '</td>'
+																						+ '</tr>'));
+															});
+											// remove the opportunity of duplicate data being loaded
+											if ($('.dataRow').length == dataSize) {
+												$('input.getData').off('click');
+											}
+										},
+										//  (jqXHR jqXHR, String textStatus, String errorThrown)
+										error : function(jqXHR, textStatus,
+												errorThrown) {
+											$('h1.errorResponse').text(
+													'ERROR! \nServer response: '
+															+ textStatus + '\n'
+															+ errorThrown);
+										}
+									});
+						});
+	</script>
+
+</body>
+</html>
