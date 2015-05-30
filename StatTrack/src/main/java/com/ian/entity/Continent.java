@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,7 +31,7 @@ public class Continent extends Place implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// Parent of Country
 	// Child (Country) should have the Continent as FK
-	@OneToMany(mappedBy = "continent")
+	@OneToMany(mappedBy = "continent", fetch = FetchType.EAGER)
 	@Column(name = "countries")
 	private Collection<Country> countries;
 
@@ -38,19 +39,19 @@ public class Continent extends Place implements Serializable {
 	 * 
 	 */
 	public Continent() {
-		
+
 	}
+
 	@Override
 	public String toString() {
-		
+
 		StringBuilder sb = new StringBuilder();
-		
-		for(Country c : countries)
+
+		for (Country c : countries)
 			sb.append(c.getName() + ", ");
-		
-		return super.toString() 
-				+ "\nCountries=" + sb; 
-		
+
+		return super.toString() + "\nCountries=" + sb;
+
 	}
 
 	public Collection<Country> getCountries() {
